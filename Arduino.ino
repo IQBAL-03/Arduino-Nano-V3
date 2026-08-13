@@ -106,7 +106,6 @@ void loop() {
   tengah("READY TO PLAY?", 2);
   tengah("Pencet START/Web", 3);
   
-  // ========== MENUNGGU START ==========
   while (true) {
     if (WiFi.status() != WL_CONNECTED) {
       connectWiFi(); 
@@ -117,7 +116,6 @@ void loop() {
       tengah("Pencet START/Web", 3);
     }
 
-    // Cek web setiap 3 detik sekali (hemat daya ESP)
     static unsigned long terakhirCek = 0;
     if (millis() - terakhirCek > 3000) {
       updateSettings();
@@ -141,7 +139,6 @@ void loop() {
     delay(100); 
   }
 
-  // ========== COUNTDOWN ==========
   for (int i = 3; i >= 1; i--) { 
     lcd.clear(); 
     lcd.setCursor(9, 1); lcd.print(i); 
@@ -151,7 +148,6 @@ void loop() {
   delay(500);
   lcd.clear();
 
-  // ========== GAME BERJALAN ==========
   waktuMulai = millis();
   bool gameRunning = true;
   while (gameRunning) {
@@ -162,15 +158,14 @@ void loop() {
     if (digitalRead(PIN_OFF) == HIGH) { systemActive = false; return; }
     static unsigned long lastLcdUpdate = 0;
     if (millis() - lastLcdUpdate > 250) {
-      lcd.setCursor(0, 0); lcd.print("KIRI  : "); lcd.print(skorKiri); lcd.print("   ");
-      lcd.setCursor(11, 0); lcd.print("KANAN : "); lcd.print(skorKanan); lcd.print("   ");
+      lcd.setCursor(0, 0); lcd.print("KIRI: "); lcd.print(skorKiri); lcd.print(" ");
+      lcd.setCursor(11, 0); lcd.print("KANAN: "); lcd.print(skorKanan); lcd.print(" ");
       lcd.setCursor(0, 3);
       lcd.print("Sisa: "); lcd.print(sisa / 1000); lcd.print(" detik  ");
       lastLcdUpdate = millis();
     }
   }
 
-  // ========== WAKTU HABIS ==========
   bip(1000);
   lcd.clear(); tengah("WAKTU HABIS!", 1);
   delay(1500);
@@ -183,9 +178,7 @@ void loop() {
   tengah("--------------------", 2);
   tengah("Pencet RESET/Web", 3);
 
-  // ========== MENUNGGU RESET ==========
   while (true) {
-    // Cek web setiap 3 detik sekali (hemat daya ESP)
     static unsigned long terakhirCekReset = 0;
     if (millis() - terakhirCekReset > 3000) {
       updateSettings();
@@ -205,9 +198,6 @@ void loop() {
   }
 }
 
-// ==========================================================
-// FUNGSI AMBIL PENGATURAN DARI WEB (DITULIS ULANG - RINGAN)
-// ==========================================================
 void updateSettings() {
   if (!client.connect(server, 80)) return;
 
@@ -217,15 +207,11 @@ void updateSettings() {
   client.println("Connection: close");
   client.println();
 
-  // Tunggu sampai ada data masuk (max 5 detik)
   unsigned long timeout = millis();
   while (client.available() == 0) {
     if (millis() - timeout > 5000) { client.stop(); delay(100); return; }
   }
 
-  // === LANGKAH 1: Skip semua HTTP Header ===
-  // Header diakhiri dengan baris kosong (\r\n\r\n)
-  // Kita baca karakter satu-satu tapi TIDAK disimpan (hemat RAM)
   bool headerSelesai = false;
   int hitungNewline = 0;
   timeout = millis();
@@ -237,16 +223,12 @@ void updateSettings() {
       } else if (c != '\r') {
         hitungNewline = 0;
       }
-      // Dua kali \r\n berturut-turut = header selesai
       if (hitungNewline >= 2) headerSelesai = true;
     }
   }
 
   if (!headerSelesai) { client.stop(); delay(100); return; }
 
-  // === LANGKAH 2: Baca BODY JSON ke buffer kecil ===
-  // Response body-nya cuma kecil, contoh:
-  // {"status":"success","match_duration":60,"game_command":"idle"}
   char body[128];
   int idx = 0;
   timeout = millis();
@@ -257,20 +239,17 @@ void updateSettings() {
   }
   body[idx] = '\0';
   client.stop();
-  delay(100); // Kasih waktu ESP bersihkan koneksi
+  delay(100); 
 
-  // === LANGKAH 3: Parse JSON dari buffer pakai strstr ===
-  // Cari match_duration
   char* p = strstr(body, "match_duration\":");
   if (p) {
-    int val = atoi(p + 16); // loncat melewati teks "match_duration":
+    int val = atoi(p + 16); 
     if (val > 0) durasiGame = (unsigned long)val * 1000;
   }
 
-  // Cari game_command
   p = strstr(body, "game_command\":\"");
   if (p) {
-    p += 15; // loncat melewati teks game_command":"
+    p += 15; 
     char cmd[16];
     int j = 0;
     while (p[j] != '"' && p[j] != '\0' && j < 15) {
@@ -282,7 +261,6 @@ void updateSettings() {
   }
 }
 
-// ========== FUNGSI CLEAR COMMAND DI WEB ==========
 void clearCommand() {
   if (!client.connect(server, 80)) return;
   client.println("GET /thunder-hoops/api/clear_command.php HTTP/1.1");
@@ -295,7 +273,6 @@ void clearCommand() {
   delay(100);
 }
 
-// ========== FUNGSI KIRIM SKOR KE WEB ==========
 void kirimDataKeWeb() {
   if (!client.connect(server, 80)) return;
   String pmn = (skorKiri > skorKanan) ? "KIRI" : (skorKanan > skorKiri) ? "KANAN" : "SERI";
@@ -317,7 +294,6 @@ void kirimDataKeWeb() {
   delay(100);
 }
 
-// ========== FUNGSI BACA SENSOR ULTRASONIK ==========
 void bacaSensor() {
   static unsigned long lastScoreKiri = 0;
   static unsigned long lastScoreKanan = 0;
