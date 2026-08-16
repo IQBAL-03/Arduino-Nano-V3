@@ -13,9 +13,9 @@
 #define TRIG_KANAN  4
 #define ECHO_KANAN  5
 
-char ssid[] = "A";             
-char pass[] = "16792020Emol"; 
-char server[] = "www.iqblprojects.my.id"; 
+char ssid[] = "Stex2026-2";            
+char pass[] = "stex2026-2"; 
+char server[] = "basket.iqblprojects.my.id"; 
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 SoftwareSerial espSerial(6, 7); 
@@ -27,6 +27,9 @@ unsigned long waktuMulai;
 unsigned long durasiGame = 60000; 
 String currentCommand = "idle";
 bool systemActive = true; 
+
+int batasJarakKiri = 6.5;  
+int batasJarakKanan = 6.5; 
 
 void tengah(String teks, int baris) {
   int l = teks.length();
@@ -239,7 +242,7 @@ void updateSettings() {
   }
   body[idx] = '\0';
   client.stop();
-  delay(100); 
+  delay(100);
 
   char* p = strstr(body, "match_duration\":");
   if (p) {
@@ -298,12 +301,12 @@ void bacaSensor() {
   static unsigned long lastScoreKiri = 0;
   static unsigned long lastScoreKanan = 0;
   if (millis() - lastScoreKiri > 600) { 
-    if (getDistance(TRIG_KIRI, ECHO_KIRI) < 12) { 
+    if (getDistance(TRIG_KIRI, ECHO_KIRI) < batasJarakKiri) { 
       skorKiri++; bip(70); lastScoreKiri = millis(); 
     } 
   }
   if (millis() - lastScoreKanan > 600) { 
-    if (getDistance(TRIG_KANAN, ECHO_KANAN) < 12) { 
+    if (getDistance(TRIG_KANAN, ECHO_KANAN) < batasJarakKanan) { 
       skorKanan++; bip(70); lastScoreKanan = millis(); 
     } 
   }
