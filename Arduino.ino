@@ -14,9 +14,9 @@
 #define TRIG_KANAN  4
 #define ECHO_KANAN  5
 
-char ssidArr[33] = "Stex2026-2";
-char passArr[33] = "stex2026-2";
-const char server[] = "basket.iqblprojects.my.id";
+char ssidArr[33] = "[nama wifi]";
+char passArr[33] = "[password wifi]";
+const char server[] = "[domain tujuan]";
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 SoftwareSerial espSerial(6, 7);
