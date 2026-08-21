@@ -14,9 +14,9 @@
 #define TRIG_KANAN  4
 #define ECHO_KANAN  5
 
-char ssidArr[33] = "[nama wifi]";
-char passArr[33] = "[password wifi]";
-const char server[] = "[domain tujuan]";
+char ssidArr[33] = "[nama_wifi]";
+char passArr[33] = "[password_wifi]";
+const char server[] = "[domain_tujuan]";
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 SoftwareSerial espSerial(6, 7);
