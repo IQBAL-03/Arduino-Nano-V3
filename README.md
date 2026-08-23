@@ -50,3 +50,7 @@ const char server[] = "[domain_tujuan]"; // Ganti dengan Domain/IP Server Web Da
 - **Sinkronisasi Web Real-Time:** Menerima perintah *START*, *RESET*, perubahan *durasi pertandingan*, dan *sinkronisasi WiFi* langsung dari dashboard web.
 - **Pengiriman Skor Otomatis:** Mengirim hasil akhir permainan beserta pemenang ke web API setelah pertandingan selesai.
 - **Dual Sensor Ultrasonik:** Deteksi ring basket presisi untuk pemain Kiri dan Kanan.
+
+---
+# Video Uji Coba / Simulasi
+https://drive.google.com/drive/folders/1dbrQxIY8MP_kBGO0hwcYRxfDN8kXtp76?usp=drive_link
